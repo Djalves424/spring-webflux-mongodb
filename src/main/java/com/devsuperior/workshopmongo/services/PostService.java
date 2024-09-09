@@ -3,6 +3,7 @@ package com.devsuperior.workshopmongo.services;
 import com.devsuperior.workshopmongo.dto.PostDTO;
 import com.devsuperior.workshopmongo.repositories.PostRepository;
 import com.devsuperior.workshopmongo.services.exceptioons.ResourceNotFoundException;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -28,5 +29,9 @@ public class PostService {
     public Flux<PostDTO> fullSearch(String text, Instant minDate, Instant maxDate) {
         maxDate = maxDate.plusSeconds(86400); // 24 * 60 * 60
         return repository.fullSearch(text, minDate, maxDate).map(postFound -> new PostDTO(postFound));
+    }
+
+    public Flux<PostDTO> findByUser(String id) {
+        return repository.findByUser(new ObjectId(id)).map(post -> new PostDTO(post));
     }
 }
