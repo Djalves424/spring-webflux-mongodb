@@ -10,6 +10,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.time.Instant;
 
 @RestController
 @RequestMapping(value = "/posts")
@@ -29,19 +31,16 @@ public class PostController {
         return service.findByTitle(text);
     }
 
-	/*
+    @GetMapping(value = "/fullsearch")
+    public Flux<PostDTO> fullSearch(
+            @RequestParam(value = "text", defaultValue = "") String text,
+            @RequestParam(value = "minDate", defaultValue = "") String minDate,
+            @RequestParam(value = "maxDate", defaultValue = "") String maxDate) throws UnsupportedEncodingException, ParseException {
 
-	@GetMapping(value = "/fullsearch")
-	public ResponseEntity<List<PostDTO>> fullSearch(
-			@RequestParam(value = "text", defaultValue = "") String text,
-			@RequestParam(value = "minDate", defaultValue = "") String minDate,
-			@RequestParam(value = "maxDate", defaultValue = "") String maxDate) throws UnsupportedEncodingException, ParseException {
-		
-		text = URL.decodeParam(text);
-		Instant min = URL.convertDate(minDate, Instant.EPOCH);
-		Instant max = URL.convertDate(maxDate, Instant.now());
-		
-		List<PostDTO> list = service.fullSearch(text, min, max);
-		return ResponseEntity.ok(list);
-	}*/
+        text = URL.decodeParam(text);
+        Instant min = URL.convertDate(minDate, Instant.EPOCH);
+        Instant max = URL.convertDate(maxDate, Instant.now());
+
+        return service.fullSearch(text, min, max);
+    }
 }
