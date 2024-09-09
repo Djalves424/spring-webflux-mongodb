@@ -1,8 +1,12 @@
 package com.devsuperior.workshopmongo.services;
 
+import com.devsuperior.workshopmongo.dto.PostDTO;
+import com.devsuperior.workshopmongo.dto.UserDTO;
 import com.devsuperior.workshopmongo.repositories.PostRepository;
+import com.devsuperior.workshopmongo.services.exceptioons.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 @Service
 public class PostService {
@@ -10,10 +14,12 @@ public class PostService {
     @Autowired
     private PostRepository repository;
 
-	/*@Transactional(readOnly = true)
-	public PostDTO findById(String id) {
-		Post post = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Recurso não encontrado"));
-		return new PostDTO(post);
+    public Mono<PostDTO> findById(String id) {
+        return repository.findById(id).map(existingPost -> new PostDTO(existingPost))
+                .switchIfEmpty(Mono.error(new ResourceNotFoundException("Recurso não encontrado")));
+    }
+
+	/*
 	}
 	
 	public List<PostDTO> findByTitle(String text) {
